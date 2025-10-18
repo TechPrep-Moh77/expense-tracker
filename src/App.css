@@ -1,4 +1,27 @@
-#root {
+/* src/App.css */
+.App {
+  min-height: 100vh;
+  background-color: #f8fafc; /* Light gray background instead of white */
+}
+
+/* Ensure the header container doesn't add extra spacing */
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Reset any default body margins that might cause issues */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f8fafc;
+}
+
+
+
+/*css for counter examplee*/
+/* #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
@@ -39,4 +62,4 @@
 
 .read-the-docs {
   color: #888;
-}
+} */
