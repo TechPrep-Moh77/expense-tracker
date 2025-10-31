@@ -1,18 +1,26 @@
-# Expense Tracker (Vite Version)
+# Expense Tracker (Next.js Version)
 
-** Migration Note:** This project was migrated to Next.js in Week 6.
-See the Next.js version: [expense-tracker-next](https://github.com/your-username/expense-tracker-next)
+** Production Version:** Next.js migration of the original Vite Expense Tracker.
+Original Vite version: [expense-tracker](https://github.com/your-username/expense-tracker)
 
-React expense tracking application built with Vite, TypeScript, and Tailwind CSS (Weeks 2-5).
+Full-stack expense tracking application built with Next.js 14, featuring server-side rendering and API routes.
 
-**Tech Stack:** Vite, React, TypeScript, Tailwind CSS
+**Tech Stack:** Next.js 14, React, TypeScript, Tailwind CSS, API Routes
 
-**Migration Journey:**
-- Weeks 2-5: Built with Vite + React (this version)
-- Week 6: Migrated to Next.js for production features
-- Week 7: Deployed with CI/CD pipeline
+**New Features:**
+- File-based routing
+- Server Components for performance
+- API routes for backend functionality
+- Server-side rendering
+- Automatic optimizations
 
-[Rest of your original README...]
+**Migration Highlights:**
+- Migrated from Vite to Next.js (Week 6)
+- Added `'use client'` to interactive components
+- Converted to file-based routing
+- Built API endpoints for CRUD operations
+- Improved performance with SSR
+
 
 
 
