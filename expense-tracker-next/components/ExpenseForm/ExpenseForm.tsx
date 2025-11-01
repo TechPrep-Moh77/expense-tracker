@@ -8,6 +8,7 @@ interface FormErrors {
   amount?: string;
   category?: string;
   date?: string;
+  receipt?: string;  // For receipt upload errors
 }
 
 interface ExpenseFormData {
@@ -23,6 +24,7 @@ interface ExpenseFormProps {
     amount: number;
     category: ExpenseCategory;
     date: string;
+    receiptUrl?: string;  // Optional receipt URL
   }) => void;
 }
 
@@ -35,7 +37,8 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit }) => {
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
-
+  const [receipt, setReceipt] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
   const validateExpenseForm = (data: ExpenseFormData): {isValid: boolean; errors: FormErrors} => {
     const validationErrors: FormErrors = {};
 
@@ -97,6 +100,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit }) => {
       category: formData.category,
       date: formData.date
     });
+    
 
     setFormData({
       description: '',
@@ -105,7 +109,51 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit }) => {
       date: new Date().toISOString().split('T')[0]
     });
   };
-
+/** NEWW!
+ * Handles receipt file selection from file input
+ * Validates file type and size before storing in state
+ */
+const handleReceiptChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+  // Check if user selected a file
+  // e.target.files is FileList (array-like) or null
+  if (e.target.files && e.target.files[0]) {
+    const file = e.target.files[0];
+    
+    // VALIDATION 1: Check file type
+    // file.type is MIME type: 'image/jpeg', 'image/png', etc.
+    // .startsWith('image/') accepts any image type
+    // Rejects: 'application/pdf', 'text/plain', 'video/mp4', etc.
+    if (!file.type.startsWith('image/')) {
+      // Set error message for user
+      setErrors(prev => ({ 
+        ...prev, 
+        receipt: 'Please select an image file (JPG, PNG, GIF)' 
+      }));
+      // Clear selected file
+      setReceipt(null);
+      return; // Stop here, don't proceed
+    }
+    
+    // VALIDATION 2: Check file size
+    // file.size is in bytes
+    // 5MB = 5 * 1024 KB = 5 * 1024 * 1024 bytes = 5,242,880 bytes
+    const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+    if (file.size > MAX_SIZE) {
+      setErrors(prev => ({ 
+        ...prev, 
+        receipt: 'File size must be less than 5MB' 
+      }));
+      setReceipt(null);
+      return;
+    }
+    
+    // File is valid! Store it in state
+    setReceipt(file);
+    
+    // Clear any previous errors
+    setErrors(prev => ({ ...prev, receipt: undefined }));
+  }
+};
   return (
     <form className="bg-white rounded-lg p-6 mb-8 shadow-sm border border-gray-200" onSubmit={handleSubmit}>
       <h3 className="text-lg font-semibold text-gray-900 mb-5">Add New Expense</h3>
@@ -228,7 +276,43 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSubmit }) => {
           <span className="text-red-500 text-xs mt-1 block">{errors.date}</span>
         )}
       </div>
+{/* Receipt upload field */}
+<div className="mb-6">
+  <label htmlFor="receipt-input" className="block text-sm font-medium text-gray-700 mb-1.5">
+    Receipt (Optional)
+  </label>
+  <input
+    type="file"
+    id="receipt-input"
+    accept="image/*"
+    onChange={handleReceiptChange}
+    disabled={uploading}
+    className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50"
+  />
+  {receipt && (
+    <p className="mt-2 text-sm text-gray-600">
+      Selected: <span className="font-medium">{receipt.name}</span>
+      {' '}({(receipt.size / 1024).toFixed(2)} KB)
+    </p>
+  )}
+  {errors.receipt && (
+    <span className="text-red-500 text-xs mt-1 block">{errors.receipt}</span>
+  )}
+  <p className="mt-1 text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
+</div>
 
+{/* Update submit button. THIS REPLACES THE OLD SUBMIT BUTTON */}
+<button 
+  type="submit" 
+  disabled={uploading}
+  className={`w-full py-3 px-4 rounded-md font-medium ${
+    uploading
+      ? 'bg-gray-300 cursor-not-allowed'
+      : 'bg-blue-500 hover:bg-blue-600 text-white'
+  }`}
+>
+  {uploading ? 'Uploading Receipt...' : 'Add Expense'}
+</button>
       <button 
         type="submit" 
         className="
